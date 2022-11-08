@@ -1,0 +1,27 @@
+{
+    "name": "clembet/omnipay-openpix",
+    "description": "OpenPIX gateway for OmniPay",
+    "keywords": [
+        "openpix",
+	    "omnipay"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Keite Clembet",
+            "email": "clembet@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+	    "clembet/omnipay-common": "^3.0"
+    },
+    "require-dev": {
+        "clembet/omnipay-tests": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\OpenPIX\\": "src/"
+        }
+    }
+}
