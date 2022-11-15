@@ -4,7 +4,7 @@ namespace Omnipay\OpenPIX\Message;
 
 class PurchaseRequest extends AbstractRequest
 {
-    protected $resourcePix = 'invoice/create/';
+    protected $resource = 'charge';
     protected $requestMethod = 'POST';
 
     public function getItemData()
@@ -47,41 +47,18 @@ class PurchaseRequest extends AbstractRequest
         }
 
         $data = [
-            'clientID' => $this->getClientID(),
-            'appID' => $this->getAppID(),
-            'order_id' => $this->getOrderId(), // código interno do lojista para identificar a transacao.
-            'payer_email' => $customer->getEmail(),
-            'payer_name' => $customer->getName(), // nome completo ou razao social
-            'payer_cpf_cnpj' => $customer->getDocumentNumber(), // cpf ou cnpj
-            'payer_phone' => $customer->getPhone(), // fixou ou móvel
-            'shipping_price_cents' => $this->getShippingPrice(), // em centavos
-            'shipping_methods' => 'Envio Personalizado',
-            'fixed_description' => false,
-            'days_due_date' => $this->getDueDays(), // dias para vencimento da  cobrança
-            'discount_cents' => '0', // em centavos
-            'notification_url' => $this->getNotifyUrl(),
-            'items' => $itemsArr,
+            'correlationID' => $this->getOrderId(), // código interno do lojista para identificar a transacao.
+            'value' => (int)($this->getAmount()*100.0),//$this->getShippingPrice(), // em centavos
+            'comment'=> '',
+            'customer' => [
+                "name"=> $customer->getName(), // nome completo ou razao social
+                "email"=> $customer->getEmail(),
+                "phone"=> $customer->getPhone(), // fixou ou móvel
+                "taxID"=> $customer->getDocumentNumber(), // cpf ou cnpj
+            ]
         ];
 
-        if(strcmp("boleto", strtolower($this->getPaymentType()))==0)
-        {
-            $data_complemento = [
-                'payer_street' => $customer->getBillingAddress1(),
-                'payer_number' => $customer->getBillingNumber(),
-                'payer_complement' => $customer->getBillingAddress2(),
-                'payer_district' => $customer->getBillingDistrict(),
-                'payer_city' => $customer->getBillingCity(),
-                'payer_state' => $customer->getBillingState(), // apenas sigla do estado
-                'payer_zip_code' => $customer->getBillingPostcode(),
-                'type_bank_slip' => 'boletoA4', // formato do boleto
-                'open_after_day_due' => '0',
-            ];
-
-            $data = array_merge($data, $data_complemento);
-        }
-
         return $data;
-
     }
 }
 

@@ -2,8 +2,8 @@
 
 class FetchTransactionRequest extends AbstractRequest
 {
-    protected $resourcePix = 'invoice/status/';
-    protected $requestMethod = 'POST';
+    protected $resourcePix = 'charge';//transaction
+    protected $requestMethod = 'GET';
 
     public function getData()
     {
@@ -22,18 +22,18 @@ class FetchTransactionRequest extends AbstractRequest
             'Accept' => 'application/json',
             'Accept-Charset' => 'UTF-8',
             'Accept-Encoding' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
+            'Authorization' => $this->getAppID()
         ];
 
-        $data = [
-            'clientID' => $this->getClientID(),
-            'appID' => $this->getAppID(),
-            'transaction_id' => $this->getTransactionID()
-        ];
-
-        $httpResponse = $this->httpClient->request($method, $url, $headers, $this->toJSON($data));
+        $httpResponse = $this->httpClient->request($method, $url, $headers);
         $json = $httpResponse->getBody()->getContents();
         $json = @json_decode($json, true);
-        return $this->createResponse(@$json["status_request"]);
+        return $this->createResponse(@$json["charge"]);
+    }
+
+    protected function getEndpoint()
+    {
+        return parent::getEndpoint().'/'.$this->getTransactionID();
     }
 }

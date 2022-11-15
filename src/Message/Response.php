@@ -45,7 +45,7 @@ class Response extends AbstractResponse
     public function isPaid()
     {
         $status = strtolower($this->getStatus());
-        return (strcmp("paid", $status)==0);
+        return (strcmp("COMPLETED", $status)==0);
     }
 
     public function isAuthorized()
@@ -56,13 +56,13 @@ class Response extends AbstractResponse
     public function isPending()
     {
         $status = strtolower($this->getStatus());
-        return (strcmp("pending", $status)==0);
+        return (strcmp("ACTIVE", $status)==0)||(strcmp("PENDING", $status)==0);
     }
 
     public function isVoided()
     {
         $status = strtolower($this->getStatus());
-        return ((strcmp("canceled", $status)==0) || (strcmp("refunded", $status)==0));
+        return ((strcmp("canceled", $status)==0) || (strcmp("REFUNDED", $status)==0));
     }
 
     /**
@@ -74,19 +74,32 @@ class Response extends AbstractResponse
      */
     public function getMessage()
     {
-        return @$this->data['http_code']." - ".@$this->data['response_message'];
+        return @$this->data['http_code']." - ".@$this->data['response_message'];//error
     }
 
     public function getPix()
     {
         $data = $this->getData();
         $pix = array();
-        $pix['pix_qrcodebase64image'] = "data:image/png;base64,".@$data['pix_code']['qrcode_base64'];
-        $pix['pix_qrcodestring'] = @$data['pix_code']['emv'];
-        $pix['pix_valor'] = ((double)@$data['value_cents']*1.0)/100.0;
-        $pix['pix_transaction_id'] = @$data['transaction_id'];
+        $pix['pix_qrcodebase64image'] = self::getBase64ImageFromUrl(@$data['qrCodeImage']);
+        $pix['pix_qrcodestring'] = @$data['brCode'];
+        $pix['pix_valor'] = ((double)@$data['value']*1.0)/100.0;
+        $pix['pix_transaction_id'] = @$data['correlationID'];//paymentLinkID
 
         return $pix;
+    }
+
+    public function getBase64ImageFromUrl($url)
+    {
+        $type = pathinfo($url, PATHINFO_EXTENSION);
+        if(strcmp($type, 'svg')==0)
+            $type = 'svg+xml';
+        $data = file_get_contents($url);
+        if (!$data)
+            return NULL;
+
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        return $base64;
     }
 }
 

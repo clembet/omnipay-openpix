@@ -4,10 +4,11 @@ namespace Omnipay\OpenPIX\Message;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    protected $liveEndpointPix = 'https://api.openpix.com.br';
-    protected $testEndpointPix = 'https://api.openpix.com.br';
-    protected $resourcePix = 'invoice/create/';
+    protected $liveEndpoint = 'https://api.openpix.com.br/api/openpix';
+    protected $testEndpoin = 'https://api.openpix.com.br/api/openpix';
+    protected $resource = 'charge';
     protected $requestMethod = 'POST';
+    protected $versionEndpoint = '1';
 
     public function getData()
     {
@@ -26,14 +27,15 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             'Accept' => 'application/json',
             'Accept-Charset' => 'UTF-8',
             'Accept-Encoding' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
+            'Authorization' => $this->getAppID()
         ];
         
         $httpRequest = $this->httpClient->request($method, $url, $headers, $this->toJSON($data));
 
         $content = $httpRequest->getBody()->getContents();
         $payload = json_decode($content, true);
-        return $this->createResponse(@$payload[(strcmp("boleto", strtolower($this->getPaymentType()))==0)?'create_request':'pix_create_request']);
+        return $this->createResponse(@$payload['charge']);
     }
 
     public function setClientID($value)
@@ -92,7 +94,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getShippingPrice()
     {
-        return (int)round((@((double)$this->getParameter('shipping_price')*100.0)), 0);
+        return $this->getParameter('shipping_price');
     }
 
     public function getTransactionID()
@@ -141,11 +143,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         switch(strtolower($this->getPaymentType()))
         {
             case "pix":
-                return $this->getTestMode() ? ($this->testEndpointPix . '/'.$this->resourcePix) : ($this->liveEndpointPix . '/'.$this->resourcePix);
+                return $this->getTestMode() ? ($this->testEndpoint . '/v'. $this->versionEndpoint . '/' .$this->resource) : ($this->liveEndpoint . '/v'. $this->versionEndpoint . '/'.$this->resource);
                 break;
 
             default:
-                return $this->getTestMode() ? ($this->testEndpointPix . '/'.$this->resourcePix) : ($this->liveEndpointPix . '/'.$this->resourcePix);
+                return $this->getTestMode() ? ($this->testEndpoint . '/v'. $this->versionEndpoint .'/' .$this->resource) : ($this->liveEndpoint . '/v'. $this->versionEndpoint . '/'.$this->resource);
         }
 
     }

@@ -16,6 +16,7 @@ use Omnipay\Common\ItemBag;
  * @method \Omnipay\Common\Message\RequestInterface createCard(array $options = array())
  * @method \Omnipay\Common\Message\RequestInterface updateCard(array $options = array())
  * @method \Omnipay\Common\Message\RequestInterface deleteCard(array $options = array())
+ * @method \Omnipay\Common\Message\RequestInterface acceptNotification(array $options = array())
  */
 
 class Gateway extends AbstractGateway
@@ -77,10 +78,10 @@ class Gateway extends AbstractGateway
     {
         return $this->createRequest('\Omnipay\OpenPIX\Message\FetchTransactionRequest', $parameters);
     }
-    public function acceptNotification(array $parameters = [])
+    /*/public function acceptNotification(array $parameters = [])
     {
         return $this->createRequest('\Omnipay\OpenPIX\Message\NotificationRequest', $parameters);
-    }
+    }*/
 }
 
 ?>

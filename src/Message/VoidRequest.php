@@ -17,7 +17,7 @@
 
 class VoidRequest extends AbstractRequest
 {
-    protected $resourcePix = 'invoice/cancel/';
+    protected $resourcePix = 'refund';
     protected $requestMethod = 'POST';
 
     public function getData()
@@ -37,19 +37,19 @@ class VoidRequest extends AbstractRequest
             'Accept' => 'application/json',
             'Accept-Charset' => 'UTF-8',
             'Accept-Encoding' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
+            'Authorization' => $this->getAppID()
         ];
 
         $data = [
-            'clientID' => $this->getClientID(),
-            'appID' => $this->getAppID(),
-            "status" => "canceled",
-            'transaction_id' => $this->getTransactionID()
+            'transactionEndToEndId' => $this->getExternalReference(),
+            'correlationID' => $this->getTransactionID(),
+            'value' => (int)($this->getAmount()*100.0)
         ];
 
         $httpResponse = $this->httpClient->request($method, $url, $headers, $this->toJSON($data));
         $json = $httpResponse->getBody()->getContents();
         $json = @json_decode($json, true);
-        return $this->createResponse($json["cancellation_request"]);
+        return $this->createResponse($json["refund"]);
     }
 }
