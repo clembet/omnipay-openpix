@@ -6,7 +6,11 @@ class Response extends AbstractResponse
 {
     public function isSuccessful()
     {
-        if((((int)@$this->data['http_code']*1)==201) && (strcmp(strtolower(@$this->data["result"]), "success")==0))
+        $status = $this->getStatus();
+        if($status==null)
+            return false;
+
+        if(in_array($status, array("ACTIVE", "COMPLETED", "PENDING", "REFUNDED", "EXPIRED")))
             return true;
 
         return false;
@@ -19,16 +23,16 @@ class Response extends AbstractResponse
      */
     public function getTransactionID()
     {
-        if(isset($this->data['transaction_id']))
-            return @$this->data['transaction_id'];
+        if(isset($this->data['transactionID']))//identifier, correlationID, paymentLinkID
+            return @$this->data['transactionID'];
 
         return NULL;
     }
 
     public function getTransactionAuthorizationCode()
     {
-        if(isset($this->data['transaction_id']))
-            return @$this->data['transaction_id'];
+        if(isset($this->data['transactionID']))
+            return @$this->data['transactionID'];
 
         return NULL;
     }
@@ -74,7 +78,7 @@ class Response extends AbstractResponse
      */
     public function getMessage()
     {
-        return @$this->data['http_code']." - ".@$this->data['response_message'];//error
+        return @$this->data['error'];
     }
 
     public function getPix()
@@ -94,7 +98,7 @@ class Response extends AbstractResponse
         $type = pathinfo($url, PATHINFO_EXTENSION);
         if(strcmp($type, 'svg')==0)
             $type = 'svg+xml';
-        $data = file_get_contents($url);
+        $data = @file_get_contents($url);
         if (!$data)
             return NULL;
 

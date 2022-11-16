@@ -17,7 +17,7 @@
 
 class VoidRequest extends AbstractRequest
 {
-    protected $resourcePix = 'refund';
+    protected $resource = 'refund';
     protected $requestMethod = 'POST';
 
     public function getData()
@@ -50,6 +50,8 @@ class VoidRequest extends AbstractRequest
         $httpResponse = $this->httpClient->request($method, $url, $headers, $this->toJSON($data));
         $json = $httpResponse->getBody()->getContents();
         $json = @json_decode($json, true);
+        print("{$url}\n");
+        print_r($json);
         return $this->createResponse($json["refund"]);
     }
 }

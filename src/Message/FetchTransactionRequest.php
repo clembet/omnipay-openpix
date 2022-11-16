@@ -2,7 +2,7 @@
 
 class FetchTransactionRequest extends AbstractRequest
 {
-    protected $resourcePix = 'charge';//transaction
+    protected $resource = 'charge';//transaction
     protected $requestMethod = 'GET';
 
     public function getData()

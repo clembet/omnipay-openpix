@@ -48,7 +48,7 @@ class PurchaseRequest extends AbstractRequest
 
         $data = [
             'correlationID' => $this->getOrderId(), // código interno do lojista para identificar a transacao.
-            'value' => (int)($this->getAmount()*100.0),//$this->getShippingPrice(), // em centavos
+            'value' => (int)(($this->getAmount()+$this->getShippingPrice())*100.0), // em centavos
             'comment'=> '',
             'customer' => [
                 "name"=> $customer->getName(), // nome completo ou razao social

@@ -5,7 +5,7 @@ namespace Omnipay\OpenPIX\Message;
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
     protected $liveEndpoint = 'https://api.openpix.com.br/api/openpix';
-    protected $testEndpoin = 'https://api.openpix.com.br/api/openpix';
+    protected $testEndpoint = 'https://api.openpix.com.br/api/openpix';
     protected $resource = 'charge';
     protected $requestMethod = 'POST';
     protected $versionEndpoint = '1';
