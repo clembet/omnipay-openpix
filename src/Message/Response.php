@@ -59,14 +59,26 @@ class Response extends AbstractResponse
 
     public function isPending()
     {
-        $status = strtolower($this->getStatus());
-        return (strcmp("ACTIVE", $status)==0)||(strcmp("PENDING", $status)==0);
+        $status = $this->getStatus();
+        if($status==null)
+            return false;
+
+        if(in_array($status, array("ACTIVE", "PENDING")))
+            return true;
+
+        return false;
     }
 
     public function isVoided()
     {
-        $status = strtolower($this->getStatus());
-        return ((strcmp("canceled", $status)==0) || (strcmp("REFUNDED", $status)==0));
+        $status = $this->getStatus();
+        if($status==null)
+            return false;
+
+        if(in_array($status, array("CANCELED", "REFUNDED")))
+            return true;
+
+        return false;
     }
 
     /**
